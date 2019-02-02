@@ -74,7 +74,7 @@ public class ItemGenerator : MonoBehaviour
                 }
             }
 
-           
+          //for(int i =
 
             
             

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class UnityChanController : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class UnityChanController : MonoBehaviour
     private float forwardBoostForce = 2000.0f;
     private float upForce = 500.0f;
     private float turnForce = 500.0f;
-    float press = 0;
+    
 
     private float movableRange = 3.4f;
     private float coefficient = 0.95f;
@@ -29,6 +30,9 @@ public class UnityChanController : MonoBehaviour
     private bool isFButtonDown = false;
     private bool isJButtonDown = false;
 
+    public float speed = 500f;
+    float moveX = 0f;
+    float moveZ = 0f;
 
 
     void OnTriggerEnter(Collider other)
@@ -74,54 +78,68 @@ public class UnityChanController : MonoBehaviour
             this.turnForce *= this.coefficient;
             this.upForce *= this.coefficient;
             this.unichanAnimator.speed *= this.coefficient;
-        }
+            this.forwardBoostForce *= this.coefficient;        }
 
         
 
 
         
-        if (Input.GetKey(KeyCode.Z) || this.isFButtonDown)
-        {
-            press += 0.1f;
-            this.unichanAnimator.SetFloat("Speed", 1);
-            this.isFButtonDown= true;
-
-            if (Input.GetKey(KeyCode.X))
-            {
-                this.unichanRigidbody.AddForce(this.transform.forward * this.forwardBoostForce);
-                
-                ///問題点１．ZとX同時押し（ダッシュ）中にジャンプができていない
-                ///問題点２．ダッシュ中、車やコーンに触れてもGAMEOVERにならない
-                
-                
-            }
-            else
-            {
-                this.unichanRigidbody.AddForce(this.transform.forward * this.forwardForce);
-
-            }
-        }
-        if (Input.GetKeyUp(KeyCode.Z)|| this.isFButtonDown==false)
-
+        //if (Input.GetKey(KeyCode.Z) || this.isFButtonDown)
+        //{
            
-        {
-            this.isFButtonDown = false;
-            this.unichanRigidbody.AddForce(this.transform.forward * 0f);
-            this.unichanAnimator.SetFloat("Speed", 0);
-        }
+        //    this.unichanAnimator.SetFloat("Speed", 1);
+        //    this.isFButtonDown= true;
 
-        
+        //    if (Input.GetKey(KeyCode.X))
+        //    {
+        //        this.unichanRigidbody.AddForce(this.transform.forward * this.forwardBoostForce);
 
-        if (Input.GetKey(KeyCode.LeftArrow) || this.isLButtonDown
-            && -this.movableRange < this.transform.position.x)
-        {
-            this.unichanRigidbody.AddForce(-this.turnForce, 0, 0);
-        }
-        else if (Input.GetKey(KeyCode.RightArrow) || this.isRButtonDown
-            && this.transform.position.x < this.movableRange)
-        {
-            this.unichanRigidbody.AddForce(this.turnForce, 0, 0);
-        }
+        //        ///問題点１．ZとX同時押し（ダッシュ）中にジャンプができていない
+        //        ///問題点２．ダッシュ中、車やコーンに触れてもGAMEOVERにならない
+
+
+        //    }
+        //    else
+        //    {
+        //        this.unichanRigidbody.AddForce(this.transform.forward * this.forwardForce);
+
+        //    }
+        //}
+        //if (Input.GetKeyUp(KeyCode.Z)|| this.isFButtonDown==false)
+           
+           
+        //{
+        //    this.isFButtonDown = false;
+        //    this.unichanRigidbody.AddForce(this.transform.forward * 0f);
+        //    this.unichanAnimator.SetFloat("Speed", 0);
+        //    //unichanRigidbody.velocity = new Vector3(moveX, this.transform.position.y, moveZ);
+        //}
+
+        //if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)
+        //   || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+        //{
+        //    this.unichanAnimator.SetFloat("Speed", 1);
+        //}
+
+        moveX = CrossPlatformInputManager.GetAxisRaw("Hrizontal");
+        moveZ = CrossPlatformInputManager.GetAxisRaw("Vertical");
+        Vector3 direction = new Vector3(moveX, this.transform.position.y, moveZ).normalized;
+        unichanRigidbody.velocity = new Vector3(moveX, this.transform.position.y, moveZ);
+
+        //moveX = Input.GetAxis("Horizontal") * speed;
+        //moveZ = Input.GetAxis("Vertical") * speed;
+        //Vector3 direction = new Vector3(moveX, this.transform.position.y, moveZ);
+        //}
+        //if (Input.GetKey(KeyCode.LeftArrow) || this.isLButtonDown
+        //    && -this.movableRange < this.transform.position.x)
+        //{
+        //    this.unichanRigidbody.AddForce(-this.turnForce, 0, 0);
+        //}
+        //else if (Input.GetKey(KeyCode.RightArrow) || this.isRButtonDown
+        //    && this.transform.position.x < this.movableRange)
+        //{
+        //    this.unichanRigidbody.AddForce(this.turnForce, 0, 0);
+        //}
 
 
 
@@ -140,7 +158,11 @@ public class UnityChanController : MonoBehaviour
         }
     }
 
-    
+    //private void FixedUpdate()
+    //{
+    //    unichanRigidbody.velocity = new Vector3(moveX, this.transform.position.y, moveZ);
+    //}
+
     public void GetMyLefftButtonDown()
     {
         this.isLButtonDown = true;
